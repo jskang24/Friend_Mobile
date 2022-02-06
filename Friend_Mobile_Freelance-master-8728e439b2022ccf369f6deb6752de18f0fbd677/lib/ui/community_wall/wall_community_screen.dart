@@ -288,6 +288,12 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
+  final commentController = TextEditingController();
+
+  // onCommented(){
+
+  // }
+
   bool liked = false;
   void initState() {
     FirebaseFirestore.instance
@@ -548,9 +554,10 @@ class _CommunityPostState extends State<CommunityPost> {
                 ),
               ),
               const SizedBox(width: 20),
-              const SizedBox(
+              SizedBox(
                 width: 260,
                 child: CupertinoTextField(
+                  controller: commentController,
                   maxLines: null,
                   expands: true,
                   placeholder: "write comment here ...",

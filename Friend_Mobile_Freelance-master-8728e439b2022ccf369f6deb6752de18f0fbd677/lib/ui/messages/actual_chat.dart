@@ -8,7 +8,7 @@ import 'package:friend_mobile/ui/messages/widgets/message_tile.dart';
 import 'package:friend_mobile/ui/user_profile/other_profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:friend_mobile/ui/p2p_call_sample/main.dart';
+import '../calling/jitsi.dart';
 
 class ActualChat extends StatefulWidget {
   String channelName = "";
@@ -124,7 +124,9 @@ class _ActualChat extends State<ActualChat> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => App()),
+                  MaterialPageRoute(
+                      builder: (context) => WebViewExample(
+                          channel: widget.channelName, myName: myName)),
                 );
                 //Navigator.pushNamed(context, CallingScreen.route);
               },
