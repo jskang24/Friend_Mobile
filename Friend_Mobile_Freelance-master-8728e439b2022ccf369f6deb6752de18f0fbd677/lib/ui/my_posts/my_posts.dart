@@ -156,9 +156,9 @@ class _MyPostsState extends State<MyPosts> {
         .then((DocumentSnapshot documentSnapshot) {
       setState(() {
         posts = documentSnapshot['posts'];
-        posts.remove(posts[0]);
+        // posts.remove(posts[0]);
         comm = documentSnapshot['postsCommunity'];
-        comm.remove(comm[0]);
+        // comm.remove(comm[0]);
       });
     });
     for (var i = 0; i < comm.length; i++) {
@@ -234,7 +234,11 @@ class _MyPostsState extends State<MyPosts> {
                                   name: name,
                                   community: comm[index],
                                   post: caption[index],
-                                  time: "2 hours ago",
+                                  time: postName[index]
+                                      .split("_")[1]
+                                      .split("-")
+                                      .sublist(0, 3)
+                                      .join('.'),
                                   // comments: posts[index]["comment"].length,
                                   likes: like[index],
                                   images: pfp,
@@ -524,29 +528,29 @@ class _MyPostListState extends State<MyPostList> {
           //     ),
           //   ),
           // ),
-          Row(
-            children: [
-              const SizedBox(width: 12),
-              Container(
-                height: 30,
-                width: 30,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/user1png.png"),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              const SizedBox(
-                width: 260,
-                child: CupertinoTextField(
-                  maxLines: null,
-                  expands: true,
-                  placeholder: "write comment here ...",
-                ),
-              )
-            ],
-          )
+          // Row(
+          //   children: [
+          //     const SizedBox(width: 12),
+          //     Container(
+          //       height: 30,
+          //       width: 30,
+          //       decoration: const BoxDecoration(
+          //         image: DecorationImage(
+          //           image: AssetImage("assets/images/user1png.png"),
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(width: 20),
+          //     const SizedBox(
+          //       width: 260,
+          //       child: CupertinoTextField(
+          //         maxLines: null,
+          //         expands: true,
+          //         placeholder: "write comment here ...",
+          //       ),
+          //     )
+          //   ],
+          // )
         ],
       ),
     );

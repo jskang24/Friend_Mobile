@@ -65,8 +65,7 @@ dependencies:
   google_mobile_ads: ^1.0.1
   webview_flutter: ^3.0.0
   flutter_webview_plugin: ^0.4.0
-  flutter_facebook_login: ^3.0.0
-
+  flutter_login_facebook: ^1.2.1
   # flutter_facebook_login: ^1.1.1
 
 dev_dependencies:

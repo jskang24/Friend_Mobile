@@ -12,6 +12,7 @@ import 'package:friend_mobile/ui/home/home_store.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:search_page/search_page.dart';
 
 class HobbiesSelectScreen extends StatefulWidget {
   String name = "";
@@ -34,6 +35,11 @@ class HobbiesSelectScreen extends StatefulWidget {
   _HobbiesSelectScreenState createState() {
     return _HobbiesSelectScreenState();
   }
+}
+
+class commHobby {
+  String name;
+  commHobby(this.name);
 }
 
 class _HobbiesSelectScreenState extends State<HobbiesSelectScreen> {
@@ -76,6 +82,8 @@ class _HobbiesSelectScreenState extends State<HobbiesSelectScreen> {
 
   double longitude = 0;
   double latitude = 0;
+  var data = [];
+  List<commHobby> commList = [];
 
   _determinePosition() async {
     bool serviceEnabled;
@@ -118,6 +126,15 @@ class _HobbiesSelectScreenState extends State<HobbiesSelectScreen> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     // return await Geolocator.getCurrentPosition();
+  }
+
+  retrieve() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("Communities").get();
+    data = querySnapshot.docs.map((doc) => doc.data()).toList();
+    for (var i = 0; i < data.length; i++) {
+      commList.add(commHobby(data[i]["name"]));
+    }
   }
 
   registerUser() async {
@@ -168,6 +185,10 @@ class _HobbiesSelectScreenState extends State<HobbiesSelectScreen> {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  initState() {
+    retrieve();
   }
 
   uploadProfile(String filePath) async {
@@ -256,20 +277,43 @@ class _HobbiesSelectScreenState extends State<HobbiesSelectScreen> {
                         height: 80,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 36),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              prefixIcon: SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(14.0),
-                                  child: Image.asset(
-                                      "assets/images/search_icon.png"),
+                          child: GestureDetector(
+                            child: TextField(
+                              onTap: () => showSearch(
+                                context: context,
+                                delegate: SearchPage<commHobby>(
+                                  onQueryUpdate: (s) => print(s),
+                                  items: commList,
+                                  searchLabel: 'Search Communities',
+                                  suggestion: Center(
+                                    child: Text('Filter Communities'),
+                                  ),
+                                  failure: Center(
+                                    child: Text('No Communities found...'),
+                                  ),
+                                  filter: (commHobby) => [
+                                    commHobby.name,
+                                  ],
+                                  builder: (commHobby) => SizedBox(
+                                      child: Text(
+                                    commHobby.name,
+                                  )),
                                 ),
                               ),
-                              hintText: "Search Hobbies",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                              decoration: InputDecoration(
+                                prefixIcon: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(14.0),
+                                    child: Image.asset(
+                                        "assets/images/search_icon.png"),
+                                  ),
+                                ),
+                                hintText: "Search Hobbies",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                             ),
                           ),

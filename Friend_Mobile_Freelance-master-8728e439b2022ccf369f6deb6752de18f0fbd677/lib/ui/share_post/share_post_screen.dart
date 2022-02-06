@@ -321,7 +321,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
                               label: 'Take Photo for Post',
                               onTap: () {},
                             ),
-                            const SizedBox(height: 160),
+                            const SizedBox(height: 60),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: CupertinoButton.filled(

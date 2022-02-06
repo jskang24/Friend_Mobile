@@ -245,7 +245,10 @@ class _CommunityWallScreenState extends State<CommunityWallScreen> {
                                   name: name[index],
                                   community: widget.name,
                                   post: posts[index]["caption"],
-                                  time: "2 hours ago",
+                                  time: posts[index]["timestamp"]
+                                      .split("-")
+                                      .sublist(0, 3)
+                                      .join('.'),
                                   comments: posts[index]["comment"].length,
                                   likes: posts[index]["like"],
                                   images: pfp[index],
@@ -289,18 +292,48 @@ class CommunityPost extends StatefulWidget {
 
 class _CommunityPostState extends State<CommunityPost> {
   final commentController = TextEditingController();
+  var comments = [];
+  String userImg = "asdf";
+  bool visitedlike = false;
+  bool visitedunlike = true;
 
-  // onCommented(){
+  onCommented(message) {
+    var tmpcomments = [];
+    FirebaseFirestore.instance
+        .collection("Communities")
+        .doc(widget.community)
+        .collection("Posts")
+        .doc(widget.postName)
+        .get()
+        .then((value) {
+      tmpcomments = value['comment'];
+      tmpcomments.add(message);
+      FirebaseFirestore.instance
+          .collection("Communities")
+          .doc(widget.community)
+          .collection("Posts")
+          .doc(widget.postName)
+          .update({"comment": tmpcomments});
+      setState(() {
+        comments = tmpcomments;
 
-  // }
+        print("ASDFASDF: " + comments.toString());
+      });
+    });
+    commentController.clear();
+  }
 
   bool liked = false;
+
   void initState() {
     FirebaseFirestore.instance
         .collection("Users")
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
         .then((value) {
+      setState(() {
+        userImg = value['photo'];
+      });
       if (value['likedposts'].contains(widget.postName)) {
         setState(() {
           liked = true;
@@ -316,6 +349,8 @@ class _CommunityPostState extends State<CommunityPost> {
   like() async {
     setState(() {
       liked = true;
+      visitedlike = true;
+      visitedunlike = false;
     });
     await FirebaseFirestore.instance
         .collection("Users")
@@ -341,6 +376,8 @@ class _CommunityPostState extends State<CommunityPost> {
   unlike() async {
     setState(() {
       liked = false;
+      visitedunlike = true;
+      visitedlike = true;
     });
     await FirebaseFirestore.instance
         .collection("Users")
@@ -348,7 +385,9 @@ class _CommunityPostState extends State<CommunityPost> {
         .get()
         .then((doc) {
       var likedpost = doc['likedposts'];
+      print(likedpost);
       likedpost.remove(widget.postName);
+      print(likedpost);
       FirebaseFirestore.instance
           .collection("User")
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -461,18 +500,32 @@ class _CommunityPostState extends State<CommunityPost> {
                                   SvgPicture.asset("assets/icons/like.svg"),
                                   const SizedBox(width: 20),
                                   liked
-                                      ? Text(
-                                          "${widget.likes + 1}",
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16),
-                                        )
-                                      : Text(
-                                          "${widget.likes}",
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16),
-                                        ),
+                                      ? visitedlike
+                                          ? Text(
+                                              "${widget.likes + 1}",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            )
+                                          : Text(
+                                              "${widget.likes}",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            )
+                                      : visitedlike
+                                          ? Text(
+                                              "${widget.likes}",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            )
+                                          : Text(
+                                              "${widget.likes}",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            )
                                 ],
                               ),
                             ),
@@ -498,7 +551,7 @@ class _CommunityPostState extends State<CommunityPost> {
                             ),
                             const SizedBox(width: 20),
                             Text(
-                              "${widget.likes}",
+                              "0",
                               style: const TextStyle(
                                   color: AppTheme.secondaryColor, fontSize: 16),
                             ),
@@ -528,18 +581,28 @@ class _CommunityPostState extends State<CommunityPost> {
                         fontSize: 16,
                       ),
                     ),
-                    Transform.rotate(
-                      angle: -pi / 2,
-                      child: const Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        color: AppTheme.secondaryColor,
-                        size: 20,
-                      ),
-                    ),
+                    // Transform.rotate(
+                    //   angle: -pi / 2,
+                    //   child: const Icon(
+                    //     Icons.arrow_forward_ios_outlined,
+                    //     color: AppTheme.secondaryColor,
+                    //     size: 20,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
             ),
+          ),
+          Padding(
+            padding: EdgeInsetsDirectional.only(start: 70),
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  print(comments[index]);
+                  return Container(child: Text(comments[index]));
+                }),
           ),
           Row(
             children: [
@@ -547,22 +610,42 @@ class _CommunityPostState extends State<CommunityPost> {
               Container(
                 height: 30,
                 width: 30,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("assets/images/user1png.png"),
+                    image: NetworkImage(userImg),
                   ),
                 ),
               ),
               const SizedBox(width: 20),
-              SizedBox(
-                width: 260,
-                child: CupertinoTextField(
-                  controller: commentController,
-                  maxLines: null,
-                  expands: true,
-                  placeholder: "write comment here ...",
+              Row(children: [
+                SizedBox(
+                  width: 180,
+                  child: CupertinoTextField(
+                    onSubmitted: onCommented,
+                    controller: commentController,
+                    maxLines: null,
+                    expands: true,
+                    placeholder: "write comment here ...",
+                  ),
                 ),
-              )
+                const SizedBox(width: 0),
+                MaterialButton(
+                  onPressed: () {
+                    onCommented(commentController.text);
+                  },
+                  shape: CircleBorder(),
+                  // borderRadius: BorderRadius.circular(90),
+                  color: AppTheme.primaryColor,
+                  child: SizedBox(
+                    width: 47,
+                    height: 47,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset("assets/icons/send_icom.svg"),
+                    ),
+                  ),
+                ),
+              ])
             ],
           )
         ],

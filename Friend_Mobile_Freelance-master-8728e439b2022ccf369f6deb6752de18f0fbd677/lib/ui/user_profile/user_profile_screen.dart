@@ -293,7 +293,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      (numPosts - 1).toString(),
+                                      numPosts.toString(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18,

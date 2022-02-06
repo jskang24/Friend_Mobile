@@ -8,7 +8,6 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:friend_mobile/ui/google_signup/signup_screen.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -36,17 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<UserCredential> signInWithFacebook() async {
-    // Trigger the sign-in flow
-    final LoginResult loginResult = await FacebookAuth.instance.login();
+  // Future<UserCredential> signInWithFacebook() async {
 
-    // Create a credential from the access token
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.token);
-
-    // Once signed in, return the UserCredential
-    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-  }
+  // }
 
   Future<void> signInWithGoogle() async {
     try {
@@ -252,8 +243,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                           ),
-                          onTap: () {
-                            signInWithFacebook();
+                          onTap: () async {
+                            await signInWithGoogle();
+                            // signInWithFacebook();
                           }),
                     ],
                   ),

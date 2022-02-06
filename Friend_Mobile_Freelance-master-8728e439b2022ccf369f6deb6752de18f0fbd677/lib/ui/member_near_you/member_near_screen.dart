@@ -197,27 +197,27 @@ class _MembersNearScreenState extends State<MembersNearScreen> {
                         },
                         value: rangeValue,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 36, vertical: 6),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: Padding(
-                                padding: const EdgeInsets.all(14.0),
-                                child: Image.asset(
-                                    "assets/images/search_icon.png"),
-                              ),
-                            ),
-                            hintText: "Search",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 36, vertical: 6),
+                      //   // child: TextField(
+                      //   //   decoration: InputDecoration(
+                      //   //     prefixIcon: SizedBox(
+                      //   //       width: 16,
+                      //   //       height: 16,
+                      //   //       child: Padding(
+                      //   //         padding: const EdgeInsets.all(14.0),
+                      //   //         child: Image.asset(
+                      //   //             "assets/images/search_icon.png"),
+                      //   //       ),
+                      //   //     ),
+                      //   //     hintText: "Search",
+                      //   //     border: OutlineInputBorder(
+                      //   //       borderRadius: BorderRadius.circular(10),
+                      //   //     ),
+                      //   //   ),
+                      //   // ),
+                      // ),
                     ],
                   ),
                 ),

@@ -75,6 +75,32 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
+  _showToast2() {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.greenAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check),
+          SizedBox(
+            width: 12.0,
+          ),
+          Text("Password should be at least 8 characters long"),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.TOP,
+      toastDuration: Duration(seconds: 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +171,11 @@ class _SignupScreenState extends State<SignupScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           validator: (String? value) {
-                            if (value!.isEmpty) return 'Please enter some text';
+                            if (value!.length < 9) {
+                              _showToast2();
+
+                              return "Password should be at least 8 characters long";
+                            }
                             return null;
                           },
                           controller: passwordController,
